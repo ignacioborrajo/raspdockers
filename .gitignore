@@ -1,0 +1,5 @@
+heimdall/config
+ngixproxymanager/data
+ngixproxymanager/letsencrypt
+pihole/etc-dnsmasq.d
+pihole/etc-pihole
