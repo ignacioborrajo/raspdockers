@@ -37,3 +37,5 @@ read -p "Email GIT: " gitemail
 apt install -y git
 git config --global user.name "$gituser"
 git config --global user.email "$gitemail"
+
+reboot
