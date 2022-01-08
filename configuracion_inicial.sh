@@ -4,8 +4,9 @@
 apt-get update && sudo apt-get upgrade -y
 
 #Crear el usuario 
-username="ignacio"
-password="Ruben2042"
+read -p "Nombre de usuario: " username
+read -p "Password del usuario: " password
+
 egrep "^$username" /etc/passwd >/dev/null
 if [ $? -eq 0 ]; then
         echo "$username existe!"
@@ -15,11 +16,11 @@ else
         [ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
 fi
 
-usermod -aG sudo ignacio
+usermod -aG sudo $username
 
 #Instalar Dockers
 curl -sSL https://get.docker.com | sh
-usermod -aG docker ignacio
+usermod -aG docker $username
 
 #Instalar Docker-Compose
 apt-get install -y libffi-dev libssl-dev
@@ -31,6 +32,8 @@ pip3 install docker-compose
 systemctl enable docker
 
 #Instalar GIT
+read -p "Usuario GIT: " gituser
+read -p "Email GIT: " gitemail
 apt install -y git
-git config --global user.name "Ignacio Borrajo"
-git config --global user.email "ignacio.borrajo@gmail.com"
+git config --global user.name "$gituser"
+git config --global user.email "$gitemail"
