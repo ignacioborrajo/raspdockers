@@ -32,16 +32,19 @@ pip3 install docker-compose
 systemctl enable docker
 
 #Instalar GIT
+apt install -y git
+
 read -p "Usuario GIT: " gituser
 read -p "Email GIT: " gitemail
-apt install -y git
+
 git config --global user.name "$gituser"
 git config --global user.email "$gitemail"
 
 #Fijando la IP
+read -p "Interfaz [wlan0, eth0]: " interfaz
 read -p "IP Fija: " ipaddr
 read -p "IP Router: " iprouter
-sudo echo "interface eth0" >> /etc/dhcpcd.conf 
+sudo echo "interface $interfaz" >> /etc/dhcpcd.conf 
 pi@raspberrypi:~ $ sudo echo "static ip_address=$ipaddr/24" >> /etc/dhcpcd.conf 
 pi@raspberrypi:~ $ sudo echo "static routers=$iprouter" >> /etc/dhcpcd.conf 
 pi@raspberrypi:~ $ sudo echo "static domain_name_servers=$iprouter 8.8.8.8" >> /etc/dhcpcd.conf
