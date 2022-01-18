@@ -45,8 +45,27 @@ read -p "Interfaz [wlan0, eth0]: " interfaz
 read -p "IP Fija: " ipaddr
 read -p "IP Router: " iprouter
 sudo echo "interface $interfaz" >> /etc/dhcpcd.conf 
-pi@raspberrypi:~ $ sudo echo "static ip_address=$ipaddr/24" >> /etc/dhcpcd.conf 
-pi@raspberrypi:~ $ sudo echo "static routers=$iprouter" >> /etc/dhcpcd.conf 
-pi@raspberrypi:~ $ sudo echo "static domain_name_servers=$iprouter 8.8.8.8" >> /etc/dhcpcd.conf
+sudo echo "static ip_address=$ipaddr/24" >> /etc/dhcpcd.conf 
+sudo echo "static routers=$iprouter" >> /etc/dhcpcd.conf 
+sudo echo "static domain_name_servers=$iprouter 8.8.8.8" >> /etc/dhcpcd.conf
 
-reboot
+#Montar carpeta del NAS para hacer copias de seguridad
+apt-get install -y cifs-utils
+mkdir -p backup
+read -p "IP del NAS: " nasip
+read -p "Usuario: " nasuser
+read -p "Contraseña: " naspass
+sudo echo "//$nasip/home /home/$username/backup cifs defaults,rw,username=$nasuser,password=$naspass" >> /etc/fstab
+
+echo "¿Quieres crear copias de seguridad de Home Assistant automáticamente?"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) (crontab -l 2>/dev/null; echo "0 5 * * 1 tar -zcf /home/ignacio/backup/ha_config.tgz -C /data/compose/1/ config") | crontab -; break;;
+        No ) exit;;
+    esac
+done
+
+#Cambiar el password del usuario pi
+passwd
+
+sudo reboot
