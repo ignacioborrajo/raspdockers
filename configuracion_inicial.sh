@@ -49,6 +49,30 @@ sudo echo "static ip_address=$ipaddr/24" >> /etc/dhcpcd.conf
 sudo echo "static routers=$iprouter" >> /etc/dhcpcd.conf 
 sudo echo "static domain_name_servers=$iprouter 8.8.8.8" >> /etc/dhcpcd.conf
 
+#Instal FTP
+sudo apt install -y vsftpd
+mv /etc/vsftpd.conf /etc/vsftpd.example.conf
+touch /etc/vsftpd.conf
+echo "listen=NO
+listen_ipv6=YES
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+dirmessage_enable=YES
+use_localtime=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+chroot_local_user=YES
+secure_chroot_dir=/var/run/vsftpd/empty
+pam_service_name=vsftpd
+rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+ssl_enable=NO
+user_sub_token=\$USER
+local_root=/" > /etc/vsftpd.conf
+sudo service vsftpd restart
+
 #Montar carpeta del NAS para hacer copias de seguridad
 apt-get install -y cifs-utils
 mkdir -p backup
