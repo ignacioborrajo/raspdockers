@@ -5,8 +5,9 @@ services:
     restart: always
     environment:
       - API_KEY=bZ_apzxpZpvZMTKi7zKFwU5hJk_jK8ji7VD14Nnm
-      - ZONE=borrajo.tk
+      - ZONE=borrajograndin.com
       - PROXIED=true
+      - SUBDOMAIN=chez
     dns:
       - 127.0.0.1
       - 1.1.1.1

@@ -84,7 +84,7 @@ sudo echo "//$nasip/home /home/$username/backup cifs defaults,rw,username=$nasus
 echo "¿Quieres crear copias de seguridad de Home Assistant automáticamente?"
 select yn in "Yes" "No"; do
     case $yn in
-        Yes ) (crontab -l 2>/dev/null; echo "0 5 * * 1 tar -zcf /home/ignacio/backup/ha_config.tgz -C /data/compose/1/ config") | crontab -; break;;
+        Yes ) (crontab -l 2>/dev/null; echo "0 5 * * * tar -zcf /home/ignacio/backup/ha_config.tgz -C /data/compose/1/ config") | crontab -; break;;
         No ) exit;;
     esac
 done
