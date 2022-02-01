@@ -9,11 +9,11 @@ read -p "Password del usuario: " password
 
 egrep "^$username" /etc/passwd >/dev/null
 if [ $? -eq 0 ]; then
-        echo "$username existe!"
+        echo "$username ya existe!"
 else
         pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
         useradd -m -p "$pass" "$username"
-        [ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
+        [ $? -eq 0 ] && echo "Usuario añadido al sistema!" || echo "Error añadiendo creando el usuario!"
 fi
 
 usermod -aG sudo $username
@@ -39,6 +39,8 @@ read -p "Email GIT: " gitemail
 
 git config --global user.name "$gituser"
 git config --global user.email "$gitemail"
+
+git clone https://github.com/ignacioborrajo/raspdockers.git
 
 #Fijando la IP
 read -p "Interfaz [wlan0, eth0]: " interfaz
