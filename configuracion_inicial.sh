@@ -1,7 +1,24 @@
 #!/bin/bash
 
+echo ""
+echo ""
+echo "###################################################"
+echo "ACTUALIZANDO SISTEMA"
+echo "###################################################"
+echo ""
+echo ""
+
 #Actualizar el sistema
 apt-get update && sudo apt-get upgrade -y
+
+
+echo ""
+echo ""
+echo "###################################################"
+echo "CREAR NUEVO USUARIO"
+echo "###################################################"
+echo ""
+echo ""
 
 #Crear el usuario 
 read -p "Nombre de usuario: " username
@@ -18,6 +35,14 @@ fi
 
 usermod -aG sudo $username
 
+echo ""
+echo ""
+echo "###################################################"
+echo "INSTALANDO DOCKERS"
+echo "###################################################"
+echo ""
+echo ""
+
 #Instalar Dockers
 curl -sSL https://get.docker.com | sh
 usermod -aG docker $username
@@ -31,6 +56,14 @@ pip3 install docker-compose
 
 systemctl enable docker
 
+echo ""
+echo ""
+echo "###################################################"
+echo "INSTALANDO GIT"
+echo "###################################################"
+echo ""
+echo ""
+
 #Instalar GIT
 apt install -y git
 
@@ -42,6 +75,14 @@ git config --global user.email "$gitemail"
 
 git clone https://github.com/ignacioborrajo/raspdockers.git
 
+echo ""
+echo ""
+echo "###################################################"
+echo "FIJAR IP"
+echo "###################################################"
+echo ""
+echo ""
+
 #Fijando la IP
 read -p "Interfaz [wlan0, eth0]: " interfaz
 read -p "IP Fija: " ipaddr
@@ -50,6 +91,14 @@ sudo echo "interface $interfaz" >> /etc/dhcpcd.conf
 sudo echo "static ip_address=$ipaddr/24" >> /etc/dhcpcd.conf 
 sudo echo "static routers=$iprouter" >> /etc/dhcpcd.conf 
 sudo echo "static domain_name_servers=$iprouter 8.8.8.8" >> /etc/dhcpcd.conf
+
+echo ""
+echo ""
+echo "###################################################"
+echo "INSTALANDO FTP"
+echo "###################################################"
+echo ""
+echo ""
 
 #Instal FTP
 sudo apt install -y vsftpd
@@ -75,6 +124,14 @@ user_sub_token=\$USER
 local_root=/" > /etc/vsftpd.conf
 sudo service vsftpd restart
 
+echo ""
+echo ""
+echo "###################################################"
+echo "MONTAR VOLUMEN DEL NAS PARA BACKUPS"
+echo "###################################################"
+echo ""
+echo ""
+
 #Montar carpeta del NAS para hacer copias de seguridad
 apt-get install -y cifs-utils
 mkdir -p backup
@@ -82,6 +139,15 @@ read -p "IP del NAS: " nasip
 read -p "Usuario: " nasuser
 read -p "Contraseña: " naspass
 sudo echo "//$nasip/home /home/$username/backup cifs defaults,rw,username=$nasuser,password=$naspass" >> /etc/fstab
+mount -a
+
+echo ""
+echo ""
+echo "###################################################"
+echo "INSTALACIÓN DE APLICACIONES"
+echo "###################################################"
+echo ""
+echo ""
 
 echo "¿Quieres crear copias de seguridad de Home Assistant automáticamente?"
 select yn in "Yes" "No"; do
@@ -90,6 +156,30 @@ select yn in "Yes" "No"; do
         No ) exit;;
     esac
 done
+
+echo "¿Quieres crear copias de seguridad de Ngix Proxy Manager automáticamente?"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) (crontab -l 2>/dev/null; echo "5 5 * * * tar -zcf /home/pi/backup/nigxproxymanager.tgz -C /home/pi/raspdockers/ ngixproxymanager") | crontab -; break;;
+        No ) exit;;
+    esac
+done
+
+echo "¿Quieres crear copias de seguridad de Heimdall automáticamente?"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) (crontab -l 2>/dev/null; echo "10 5 * * * tar -zcf /home/pi/backup/nigxproxymanager.tgz -C /home/pi/raspdockers/ ngixproxymanager") | crontab -; break;;
+        No ) exit;;
+    esac
+done
+
+echo ""
+echo ""
+echo "###################################################"
+echo "MONTAR VOLUMEN DEL NAS PARA BACKUPS"
+echo "###################################################"
+echo ""
+echo ""
 
 #Cambiar el password del usuario pi
 passwd
