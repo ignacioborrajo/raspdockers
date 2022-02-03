@@ -149,34 +149,92 @@ echo "###################################################"
 echo ""
 echo ""
 
-echo "¿Quieres crear copias de seguridad de Home Assistant automáticamente?"
-select yn in "Yes" "No"; do
-    case $yn in
-        Yes ) (crontab -l 2>/dev/null; echo "0 5 * * * tar -zcf /home/ignacio/backup/ha_config.tgz -C /data/compose/1/ config") | crontab -; break;;
-        No ) exit;;
-    esac
-done
+n=true
 
-echo "¿Quieres crear copias de seguridad de Ngix Proxy Manager automáticamente?"
-select yn in "Yes" "No"; do
-    case $yn in
-        Yes ) (crontab -l 2>/dev/null; echo "5 5 * * * tar -zcf /home/pi/backup/nigxproxymanager.tgz -C /home/pi/raspdockers/ ngixproxymanager") | crontab -; break;;
-        No ) exit;;
-    esac
-done
+while [ $n ]
+do
+	salir=false
+	echo "¿Quieres instalar alguna de las aplicaciones disponibles?"
+	select yn in "PiHole" "CloudFlareDDNS" "Heimdall" "NgixProxyManager" "Portainer" "PortainerEdgeAgent" "SpeedTest" "HomeAssistant" "Salir"; do
+        case $yn in
+            PiHole ) 
+                echo "Instalando Pi Hole"
+                cd raspdockers/pihole 
+                docker-compose up -d
+                cd .. 
+                cd ..
+                break;;
+            CloudFlareDDNS ) 
+                echo "Instalando CloudFlare DDNS"
+                cd raspdockers/cloudflare_ddns
+                docker-compose up -d
+                cd ..
+                cd ..
+                break;;
+            Heimdall ) 
+                echo "Instalando Heimdall"
+                cd raspdockers/heimdall
+                docker-compose up -d
+                cd ..
+                cd ..
+                (crontab -l 2>/dev/null; echo "10 5 * * * tar -zcf /home/pi/backup/nigxproxymanager.tgz -C /home/pi/raspdockers/ ngixproxymanager") | crontab -;
+                break;;
+            NgixProxyManager ) 
+                echo "Instalando Ngix Proxy Manager"
+                cd raspdockers/ngixproxymanager
+                docker-compose up -d
+                cd ..
+                cd ..
+                (crontab -l 2>/dev/null; echo "5 5 * * * tar -zcf /home/pi/backup/nigxproxymanager.tgz -C /home/pi/raspdockers/ ngixproxymanager") | crontab -;
+                break;;
+            Portainer ) 
+                echo "Instalando Portainer"
+                chmod a+x raspdockers/portainer/portainer.sh
+                source raspdockers/portainer/portainer.sh
+                break;;
+            PortainerEdgeAgent ) 
+                echo "Instalando Portainer Edge Agent"
+                chmod a+x raspdockers/portainer/edge_agent.sh
+                source raspdockers/portainer/edge_agent.sh
+                break;;
+            SpeedTest ) 
+                echo "Instalando SpeedTest"
+                cd raspdockers/speedtest
+                docker-compose up -d
+                cd ..
+                cd ..
+                break;;
+            HomeAssistant ) 
+                echo "Instalando Home Assistant"
+                cd raspdockers/homeassistant
+                docker-compose up -d
+                cd ..
+                cd ..
+                (crontab -l 2>/dev/null; echo "0 5 * * * tar -zcf /home/ignacio/backup/ha_config.tgz -C /data/compose/1/ config") | crontab -;
+                break;;
+            Salir ) 
+                salir=true
+                break;;
+        esac
+	done
+	
+	echo ""
+	echo ""
+	echo "----------------------------------------------------------"
+	echo ""
+	echo ""
 
-echo "¿Quieres crear copias de seguridad de Heimdall automáticamente?"
-select yn in "Yes" "No"; do
-    case $yn in
-        Yes ) (crontab -l 2>/dev/null; echo "10 5 * * * tar -zcf /home/pi/backup/nigxproxymanager.tgz -C /home/pi/raspdockers/ ngixproxymanager") | crontab -; break;;
-        No ) exit;;
-    esac
+	if [ $salir = true ] 
+	then
+		break
+	fi
+
 done
 
 echo ""
 echo ""
 echo "###################################################"
-echo "MONTAR VOLUMEN DEL NAS PARA BACKUPS"
+echo "CAMBIAR LA CONTRASEÑA DEL USUARIO pi"
 echo "###################################################"
 echo ""
 echo ""
